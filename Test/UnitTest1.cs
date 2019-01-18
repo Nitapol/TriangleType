@@ -1,6 +1,6 @@
 using System;
 using Xunit;
-using project3;
+using project2;
 
 namespace Test
 {
@@ -185,7 +185,7 @@ namespace Test
         [InlineData("2.00000000000000001", "2.00000000000000002", "2.00000000000000003")]
         // The smallest positive Double in C# is 4.94065645841247E-324
         [InlineData("4.94065645841247E-324", "4.94065645841248E-324", "4.94065645841249E-324")]
-        [InlineData("4E-324", "5E-324", "9E-324")]
+        [InlineData("4E-324", "5E-324", "8E-324")]
         // The largest possible value of a Double 1.79769313486232E+308 (in docs.microsoft.com)
         [InlineData("1.79769313486232E+308", "1.79769313486231E+308", "1.79769313486230E+308")]
         // Actually it is                         1.7976931348623157E+308

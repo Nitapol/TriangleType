@@ -6,7 +6,7 @@ namespace project3
 {
     public class Program
     {
-        public class UnlimitedRealNumber //: IComparable, IComparable<UnlimitedRealNumber>
+        public class UnlimitedRealNumber : IComparable, IComparable<UnlimitedRealNumber>
         /* 1.2345 = 12345 * 10 ** -4
            1.2345e2 = 12345 * 10 ** -2
            12345 is significant
@@ -101,6 +101,7 @@ namespace project3
                 }
                 return other;
             }
+
 
             public int CompareTo(object obj)
             {
