@@ -6,7 +6,7 @@ namespace project3
 {
     public class Program
     {
-        public class UnlimitedRealNumber : IComparable, IComparable<UnlimitedRealNumber>
+        public class BigDecimal : IComparable, IComparable<BigDecimal>
         /* 1.2345 = 12345 * 10 ** -4
            1.2345e2 = 12345 * 10 ** -2
            12345 is significant
@@ -16,25 +16,25 @@ namespace project3
             protected BigInteger significant;
             protected BigInteger exponent;
 
-            public UnlimitedRealNumber()
+            public BigDecimal()
             {
                 significant = 0;
                 exponent = 0;
             }
 
-            public UnlimitedRealNumber(int i)
+            public BigDecimal(int i)
             {
                 significant = i;
                 exponent = 0;
             }
 
-            public UnlimitedRealNumber(UnlimitedRealNumber i)
+            public BigDecimal(BigDecimal i)
             {
                 significant = i.significant;
                 exponent = i.exponent;
             }
 
-            public UnlimitedRealNumber(string s)
+            public BigDecimal(string s)
             {
                 significant = 0;
                 exponent = 0;
@@ -43,9 +43,13 @@ namespace project3
                 {
                     rgx = new Regex("^[\\+-]?(\\d+\\.?){1}([eE][\\+-]?\\d+)?$"); // case of 1.
                     if (!rgx.IsMatch(s))
+                    {
                         rgx = new Regex("^[\\+-]?(\\.?\\d+){1}([eE][\\+-]?\\d+)?$"); // case of .1
-                    else
-                        throw new FormatException();
+                        if (!rgx.IsMatch(s))
+                        {
+                            throw new FormatException(String.Format("Error in BigDecimal '{0}'", s));
+                        }
+                    }
                 }
                 Match m = Regex.Match(s, "^[\\+-]?\\d+");
                 if (m.Success)
@@ -68,9 +72,6 @@ namespace project3
                     exponent += BigInteger.Parse(m.Value.Substring(1));
                 }
                 RemoveTrailingZeros();
-                Console.WriteLine(s);
-                Console.WriteLine(significant);
-                Console.WriteLine(exponent);
             }
 
             private void RemoveTrailingZeros()
@@ -82,7 +83,7 @@ namespace project3
                 }
             }
 
-            private UnlimitedRealNumber MatchExponent(UnlimitedRealNumber other)
+            private BigDecimal MatchExponent(BigDecimal other)
             {
                 this.RemoveTrailingZeros();
                 other.RemoveTrailingZeros();
@@ -102,6 +103,11 @@ namespace project3
                 return other;
             }
 
+            public int CompareTo(BigDecimal other)
+            {
+                other = MatchExponent(other);
+                return this.significant.CompareTo(other.significant);
+            }
 
             public int CompareTo(object obj)
             {
@@ -109,97 +115,110 @@ namespace project3
 
                 if (obj is int i)
                 {
-                    UnlimitedRealNumber other = new UnlimitedRealNumber(i);
+                    BigDecimal other = new BigDecimal(i);
                     return this.significant.CompareTo(other.significant);
                 }
-                else if (obj is UnlimitedRealNumber other)
+                else if (obj is BigDecimal other)
                 {
                     other = MatchExponent(other);
                     return this.significant.CompareTo(other.significant);
                 }
                 else
-                    throw new ArgumentException("Object is not an UnlimitedRealNumber");
+                    throw new ArgumentException("Object is not an BigDecimal");
             }
 
-            public int CompareTo(UnlimitedRealNumber other)
+            public override bool Equals(object obj)
             {
-                other = MatchExponent(other);
-                return this.significant.CompareTo(other.significant);
+                return this.CompareTo(obj) == 0;
             }
 
-            public static bool operator !=(UnlimitedRealNumber operand1, UnlimitedRealNumber operand2)
+            public override int GetHashCode()
+            {
+                this.RemoveTrailingZeros();
+                return this.significant.GetHashCode();
+            }
+
+            public static bool operator !=(BigDecimal operand1, BigDecimal operand2)
             {
                 return operand1.CompareTo(operand2) != 0;
             }
-
-            public static bool operator ==(UnlimitedRealNumber operand1, UnlimitedRealNumber operand2)
+            public static bool operator ==(BigDecimal operand1, BigDecimal operand2)
             {
                 return operand1.CompareTo(operand2) == 0;
             }
 
-            public static bool operator <=(UnlimitedRealNumber operand1, UnlimitedRealNumber operand2)
+            public static bool operator <=(BigDecimal operand1, BigDecimal operand2)
             {
                 return operand1.CompareTo(operand2) <= 0;
             }
-
-            public static bool operator >=(UnlimitedRealNumber operand1, UnlimitedRealNumber operand2)
+            public static bool operator >=(BigDecimal operand1, BigDecimal operand2)
             {
                 return operand1.CompareTo(operand2) >= 0;
             }
 
-            public static bool operator <=(UnlimitedRealNumber operand1, int operand2)
+            public static bool operator <(BigDecimal operand1, BigDecimal operand2)
+            {
+                return operand1.CompareTo(operand2) < 0;
+            }
+            public static bool operator >(BigDecimal operand1, BigDecimal operand2)
+            {
+                return operand1.CompareTo(operand2) > 0;
+            }
+
+            public static bool operator <=(BigDecimal operand1, int operand2)
             {
                 return operand1.CompareTo(operand2) <= 0;
             }
-
-            public static bool operator >=(UnlimitedRealNumber operand1, int operand2)
+            public static bool operator >=(BigDecimal operand1, int operand2)
             {
                 return operand1.CompareTo(operand2) >= 0;
             }
 
-            public static UnlimitedRealNumber operator +(UnlimitedRealNumber operand1, UnlimitedRealNumber operand2)
+            public static BigDecimal operator +(BigDecimal operand1, BigDecimal operand2)
             {
-                UnlimitedRealNumber a = new UnlimitedRealNumber(operand1);
-                UnlimitedRealNumber b = new UnlimitedRealNumber(operand2);
+                BigDecimal a = new BigDecimal(operand1);
+                BigDecimal b = new BigDecimal(operand2);
 
                 b = a.MatchExponent(b);
                 a.significant += b.significant;
                 a.RemoveTrailingZeros();
-                Console.WriteLine(a.significant);
-                Console.WriteLine(a.exponent);
                 return a;
             }
         }
 
-        public static string TriangleType(string sa, string sb, string sc)
+        public static string TriangleTypeExtended(string sa, string sb, string sc)
         {
+            BigDecimal a, b, c;
             try
             {
-                UnlimitedRealNumber a = new UnlimitedRealNumber(sa);
-                UnlimitedRealNumber b = new UnlimitedRealNumber(sb);
-                UnlimitedRealNumber c = new UnlimitedRealNumber(sc);
-                if (a <= 0 || b <= 0 || c <= 0)
-                    return "neither"; // Test induced "if"!
-                if (a == b && a == c) return "equilateral";
-                if (a + b <= c || b + c <= a || a + c <= b) return "neither";
-                return a == b || a == c || b == c ? "isosceles" : "neither";
+                a = new BigDecimal(sa);
+                b = new BigDecimal(sb);
+                c = new BigDecimal(sc);
             }
             catch (FormatException e)
             {
-                Console.WriteLine("Format Exception Handler: {0}", e.ToString());
-                return "neither";
+                return e.ToString();
             }
-            catch (Exception e)
-            {
-                Console.WriteLine("Generic Exception Handler: {0}", e.ToString());
-                return "neither";
-            }
+            if (a <= 0 || b <= 0 || c <= 0)
+                return "negative side";
+            if (a == b && a == c) return "equilateral";
+            if (a + b == c || b + c == a || a + c == b) return "degenerate";
+            if (a + b < c || b + c < a || a + c < b) return "two sides < third side";
+            return a == b || a == c || b == c ? "isosceles" : "scalene";
+        }
+
+        public static string TriangleType(string sa, string sb, string sc)
+        {
+            string s = TriangleTypeExtended(sa, sb, sc);
+            if (s != "equilateral" && s != "isosceles")
+                s = "neither";
+            return s;
         }
 
         static void Main(string[] args)
         {
-            Console.WriteLine(args.GetLength(0) < 3 ? "neither" :
-                              TriangleType(args[0], args[1], args[2]));
+            Console.WriteLine(args.GetLength(0) < 3 ? "number of arguments < 3" :
+                              TriangleTypeExtended (args[0], args[1], args[2]));
         }
     }
 }
