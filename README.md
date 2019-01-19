@@ -9,9 +9,18 @@ I realized after the simple implementation of “project1” that A, B, C must b
 	1. Overflow if input >= 1.7976931348623157E+308
 	2. Loss of precision after 15 figures 
 	3. Underflow if input 4.94065645841247E-324
- If say A=4e-324, B=5e-324, C=8e-324. Side ratio is 4, 5, and 8, but the program returns “equilateral”. Will you drive the car with this program inside? :-)  
-So, the third project “Project3” deals with all these issues and I cannot think now if can invent the test and find the flaw in this code. Sorry, it is a little more complicated than project 1 or 2. 
-One doesn’t need to look  at the code. Just find the input to brake it.
+
+If A=4e-324, B=5e-324, C=8e-324. Thus, this tiny triangle side ratio is 4, 5, and 8, but the program recognizes it as “equilateral”. Will you drive a car with this program inside? :-)
+
+To deal with that the third project “Project3” was created and a class BidDecimals was introduced. Sorry, it is a little bit more complicated than project 1 or 2. On a plus side: it had passed all the existed test so far created.
+
+Test results.
+Project # Success # Failed #
+	1	19	19
+	2	30	8
+	3	38	0
+
+Please, invent the test that will fail in project3 or find the flaw in this code.
 
 Thank you,
-Nitapol
+Nitapol 
